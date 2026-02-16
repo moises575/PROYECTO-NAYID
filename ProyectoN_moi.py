@@ -1,34 +1,32 @@
 import streamlit as st
 import pandas as pd
 
-st.title("Grafico de tipos de vehiculos utilizados por los choferes")
-st.caption("Moises Porras Valverde")
+st.title("GRAFICO DE TIPOS DE VEICULOS UTILISADOS POR LOS CHOFERES")
+st.caption("Moisés Porras Valverde")
+
+st.title("FINTRO DE AUTOS MAS USADOS POR LOS CHOFERES")
 
 df = pd.read_csv("ncr_ride_bookings.csv")
 df.columns = df.columns.str.strip()
 
-st.subheader("Fintro por autos usados por los choferes")
+opciones = df["Booking Status"].dropna().unique()
 
-if "Vehicle Type" in df.columns:
+seleccion = st.multiselect(
+    "Selecciona Booking Status:",
+    options=opciones,
+    default=opciones
+)
 
-    opciones = df["Vehicle Type"].dropna().unique()
+df_filtrado = df[df["Booking Status"].isin(seleccion)]
 
-    seleccion = st.multiselect(
-        "Selecciona tipo de auto:",
-        options=opciones,
-        default=opciones
-    )
+st.write("Cantidad de registros:", df_filtrado.shape[0])
 
-    df_filtrado = df[df["Vehicle Type"].isin(seleccion)]
+with st.expander("Ver tabla de datos"):
+    st.dataframe(df_filtrado)
 
-    st.write("Cantidad de registros:", df_filtrado.shape[0])
+st.title("TIPO DE AUTOS MAS USADOS POR LOS CHOFERES")
 
-    with st.expander("Ver tabla de datos"):
-        st.dataframe(df_filtrado)
+conteo = df_filtrado["Vehicle Type"].value_counts()
 
-    conteo = df_filtrado["Vehicle Type"].value_counts()
-    st.bar_chart(conteo)
-
-else:
-    st.error("Error en columnas del archivo")
+st.bar_chart(conteo)
 
